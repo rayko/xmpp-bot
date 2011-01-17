@@ -1,0 +1,7 @@
+XMPP-BOT
+
+This is a simple bot that will connect to jabber servers with a JID and will be
+able to connect to MUC rooms as well in order to provide additional functionallity.
+Most of all this will be an implementation of XMPP4R.
+
+By Rayko
