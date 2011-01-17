@@ -1,9 +1,10 @@
 require "rubygems"
 require "xmpp4r/client"
+require "xmpp4r/roster"
 include Jabber
 
 class BotClient
-  attr_accessor :jid_data, :client, :jid, :jids, :presence
+  attr_accessor :jid_data, :client, :jid, :jids, :presence, :bot_roster
 
 
   def initialize data=nil
@@ -25,9 +26,21 @@ class BotClient
     self.client = Client::new self.jid
   end
 
+  def setup_roster
+    self.bot_roster.add_subscription_request_callback do |item,press|
+      self.bot_roster.accept_subscription(press.from)
+    end
+  end
+
+  def close
+    self.client.close!
+  end
+
   def connect
     self.client.connect
     self.client.auth self.jid_data["password"]
+    self.bot_roster = Roster::Helper.new self.client
+    self.setup_roster
     self.set_presence
   end
 
@@ -39,4 +52,11 @@ class BotClient
     end
     self.client.send self.presence
   end
+
+  def test_bot
+    self.setup_jid self.jids["daverak"]
+    self.create_client
+    self.connect
+  end
+
 end
