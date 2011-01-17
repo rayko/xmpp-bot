@@ -2,7 +2,7 @@
 *.save.*
 *.*~
 *.dump
-data/jids.txt
-data/muc-rooms.txt
+data/jids.yml
+data/muc-rooms.yml
 
 
