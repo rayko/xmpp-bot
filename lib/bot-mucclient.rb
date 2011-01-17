@@ -5,27 +5,19 @@ require "xmpp4r/muc"
 class BotMUCClient
   attr_accessor :rooms, :muc, :jid
 
-  def initialize
-    self.rooms = YAML::load(File.open("../data/muc-rooms.yml"))
-  end
-
-  def setup_jid data=nil
-    unless data.nil?
-      self.jid = Jabber::JID.new [data["jid"], data["nick"]].join("/")
-    end
-    return nil
+  def initialize data, client
+    self.rooms = data
+    self.jid = Jabber::JID.new [data["jid"], data["nick"]].join("/")
+    self.create_client client
+    self.join_room self.jid
   end
 
   def create_client client
     self.muc = Jabber::MUC::MUCClient.new client
   end
 
-  def join_room room=nil
-    unless room.nil?
-      self.muc.join room
-    else
-      self.muc.join self.jid
-    end
+  def join_room room
+    self.muc.join room
   end
 
   def close_muc

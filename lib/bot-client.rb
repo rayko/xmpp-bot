@@ -7,19 +7,11 @@ class BotClient
   attr_accessor :jid_data, :client, :jid, :jids, :presence, :bot_roster
 
 
-  def initialize data=nil
-    unless data.nil?
-      self.jid_data = data
-    end
-    self.jids = YAML::load(File.open("../data/jids.yml"))
-  end
-
-  def setup_jid data=nil
-    unless data.nil?
-      self.jid = JID::new([data["jid"], data["nick"]].join("/"))
-      self.jid_data = data
-    end
-    return nil
+  def initialize data
+    self.jid = JID::new([data["jid"], data["nick"]].join("/"))
+    self.jid_data = data
+    self.client = self.create_client
+    self.connect
   end
 
   def create_client
@@ -51,12 +43,6 @@ class BotClient
       self.presence = Presence.new
     end
     self.client.send self.presence
-  end
-
-  def test_bot
-    self.setup_jid self.jids["daverak"]
-    self.create_client
-    self.connect
   end
 
 end
