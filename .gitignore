@@ -1,0 +1,8 @@
+*.save
+*.save.*
+*.*~
+*.dump
+data/jids.txt
+data/muc-rooms.txt
+
+
