@@ -14,6 +14,7 @@ class BotClient
     self.connect
   end
 
+
   def create_client
     self.client = Client::new self.jid
   end
@@ -44,5 +45,4 @@ class BotClient
     end
     self.client.send self.presence
   end
-
 end
