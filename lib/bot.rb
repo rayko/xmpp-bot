@@ -1,8 +1,9 @@
 require "bot-client"
 require "bot-mucclient"
+require "sqlite3"
 
 class Bot
-  attr_accessor :nick, :resource, :jid_data, :room_data, :bot_client, :bot_muc
+  attr_accessor :nick, :resource, :jid_data, :room_data, :bot_client, :bot_muc, :db
   def initialize
     self.jid_data = YAML::load(File.open("../data/jids.yml"))["daverak"]
     self.room_data = YAML::load(File.open("../data/muc-rooms.yml"))["dra"]
@@ -10,6 +11,17 @@ class Bot
     # Just for the begining I'll hardcode this settings
     self.nick = "Daverak"
     self.resource = "BOT"
+
+    self.setup_db
+  end
+
+  def setup_db
+    if File.exist? '../db/bot.db'
+      self.db = SQLite3::Database.open '../db/bot.db'
+    else
+      self.db = SQLite3::Database.new '../db/bot.db'
+      self.db.execute "CREATE TABLE counters (name string, count integer)"
+    end
   end
 
   def start_client
@@ -41,11 +53,22 @@ class Bot
     self.bot_muc.muc.add_private_message_callback do |message|
       puts message.inspect
       body = message.body
-      body = body.split ","
-      if body[0] == "$say" &&  message.from == "dra@chat.speeqe.com/Rayko"
-        self.simple_send body[1].lstrip
+      body = body.split " "
+      body.reverse!
+      if body.pop == "$say" && ["Rayko", "Rayko (The Camper)"].include?(message.from.split('/')[1])
+        self.simple_send body.reverse.join(' ')
       end
     end
+  end
+
+  def run
+    self.start_client
+    self.start_mucclient
+  end
+
+  def end
+    self.stop_mucclient
+    self.stop_client
   end
 
 end
